@@ -19,7 +19,6 @@ public struct UInt128: ByteValue {
     public var bytes: ByteValue
     
     public init(bytes: ByteValue = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)) {
-        
         self.bytes = bytes
     }
 }

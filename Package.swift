@@ -44,6 +44,12 @@ let package = Package(
                 "BluetoothGAP"
             ]
         ),
+        .target(
+            name: "CBluetooth",
+            dependencies: [
+                "Bluetooth"
+            ]
+        ),
         .testTarget(
             name: "BluetoothTests",
             dependencies: [

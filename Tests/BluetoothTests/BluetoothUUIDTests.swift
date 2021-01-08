@@ -81,23 +81,18 @@ final class BluetoothUUIDTests: XCTestCase {
         for test in testData {
             
             let foundationUUID = UUID(bluetooth: test.bluetooth)
-            
+                  
             XCTAssertEqual(foundationUUID, test.foundation)
             XCTAssertEqual(foundationUUID.uuidString, test.bluetooth.bit128.rawValue)
             XCTAssertEqual(UInt128(bigEndian: UInt128(bytes: test.bytes)), UInt128(uuid: test.foundation))
+            XCTAssertEqual(MemoryLayout<BluetoothUUID>.size(ofValue: test.bluetooth), 17)
             
             switch test.bluetooth {
-                
             case .bit16:
-                
                 XCTAssertEqual(test.bluetooth.rawValue.utf8.count, 4)
-                
             case .bit32:
-                
                 XCTAssertEqual(test.bluetooth.rawValue.utf8.count, 8)
-                
             case .bit128:
-                
                 XCTAssertEqual(test.bluetooth.rawValue.utf8.count, UUID.stringLength)
             }
         }
