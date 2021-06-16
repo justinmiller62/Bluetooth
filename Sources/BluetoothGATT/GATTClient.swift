@@ -253,10 +253,11 @@ public final class GATTClient {
         let start = characteristic.handle.value + 1
         
         let end = endHandle(for: characteristic, service: service)
+        if end >= start {
+            let operation = DescriptorDiscoveryOperation(start: start, end: end, completion: completion)
         
-        let operation = DescriptorDiscoveryOperation(start: start, end: end, completion: completion)
-        
-        discoverDescriptors(operation: operation)
+            discoverDescriptors(operation: operation)
+        }
     }
     
     /// Read Characteristic Descriptor
