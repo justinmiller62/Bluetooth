@@ -106,7 +106,7 @@ public extension BluetoothHostControllerInterface {
             
             // parse LE advertising report
             guard let advertisingReport = HCILEAdvertisingReport(data: metaEvent.eventData)
-                else { throw BluetoothHostControllerError.garbageResponse(Data(metaEvent.eventData).hexEncodedString()) }
+                else { throw BluetoothHostControllerError.garbageResponse(Data(metaEvent.eventData)) }
             
             // call closure on each device found
             advertisingReport.reports.forEach { foundDevice($0) }
