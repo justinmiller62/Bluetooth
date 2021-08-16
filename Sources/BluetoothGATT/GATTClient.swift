@@ -253,11 +253,11 @@ public final class GATTClient {
         let start = characteristic.handle.value + 1
         
         let end = endHandle(for: characteristic, service: service)
-        if end >= start {
+       // if end >= start {
             let operation = DescriptorDiscoveryOperation(start: start, end: end, completion: completion)
         
             discoverDescriptors(operation: operation)
-        }
+      //  }
     }
     
     /// Read Characteristic Descriptor
@@ -467,8 +467,8 @@ public final class GATTClient {
     }
     
     private func discoverDescriptors(operation: DescriptorDiscoveryOperation) {
-       // guard operation.foundDescriptors.count > 0 else { return }
-        assert(operation.start <= operation.end, "Invalid range \(operation)")
+        guard operation.foundDescriptors.count > 0 else { return }
+       // assert(operation.start <= operation.end, "Invalid range \(operation)")
         
         let pdu = ATTFindInformationRequest(startHandle: operation.start, endHandle: operation.end)
         
