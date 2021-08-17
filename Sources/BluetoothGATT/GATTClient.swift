@@ -467,7 +467,7 @@ public final class GATTClient {
     }
     
     private func discoverDescriptors(operation: DescriptorDiscoveryOperation) {
-        guard operation.foundDescriptors.count > 0 else { return }
+       // guard operation.foundDescriptors.count > 0 else { return }
        // assert(operation.start <= operation.end, "Invalid range \(operation)")
         
         let pdu = ATTFindInformationRequest(startHandle: operation.start, endHandle: operation.end)
