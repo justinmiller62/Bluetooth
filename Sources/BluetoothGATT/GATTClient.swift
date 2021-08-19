@@ -287,7 +287,7 @@ public final class GATTClient {
     public func writeDescriptor(_ descriptor: Descriptor,
                                 data: Data,
                                 reliableWrites: Bool = true,
-                                completion: ((GATTClientResponse<()>) -> ())?) {
+                                completion: @escaping (GATTClientResponse<()>) -> ()) {
         
         writeAttribute(descriptor.handle,
                        data: data,
