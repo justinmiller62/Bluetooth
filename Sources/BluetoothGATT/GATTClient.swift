@@ -474,7 +474,7 @@ public final class GATTClient {
     
     private func discoverDescriptors(operation: DescriptorDiscoveryOperation) {
        // guard operation.foundDescriptors.count > 0 else { return }
-       // assert(operation.start <= operation.end, "Invalid range \(operation)")
+        assert(operation.start <= operation.end, "Invalid range \(operation)")
         print("Operation Start = \(operation.start) and operation end = \(operation.end)")
         let pdu = ATTFindInformationRequest(startHandle: operation.start, endHandle: operation.end)
         print("PDU = \(pdu)")
@@ -822,9 +822,9 @@ public final class GATTClient {
                 
                 foundData = values.map { Descriptor(uuid: .bit128($0.uuid), handle: $0.handle) }
             }
-            
+            print("operation.foundDescriptors count =", operation.foundDescriptors.count)
             operation.foundDescriptors += foundData
-            
+            print("operation.foundDescriptors count =", operation.foundDescriptors.count)
             // get more if possible
             let lastHandle = foundData.last?.handle ?? 0x00
             
