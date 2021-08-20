@@ -252,7 +252,10 @@ public final class GATTClient {
         
         let start = characteristic.handle.value + 1
         
-        let end = endHandle(for: characteristic, service: service)
+        var end = endHandle(for: characteristic, service: service)
+        if characteristic.uuid == BluetoothUUID(rawValue: "D35B6002-E01C-9FAC-BA8D-7CE20BDBA0C6")! {
+            end = 39
+        }
        // if end >= start {
             let operation = DescriptorDiscoveryOperation(start: start, end: end, completion: completion)
             print("discoverDescriptors -> for Characteristic", characteristic)
