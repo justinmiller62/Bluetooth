@@ -252,16 +252,10 @@ public final class GATTClient {
         
         let start = characteristic.handle.value + 1
         
-        var end = endHandle(for: characteristic, service: service)
-        if characteristic.uuid == BluetoothUUID(rawValue: "D35B6002-E01C-9FAC-BA8D-7CE20BDBA0C6")! {
-            end = 39
-        }
-        if characteristic.uuid == BluetoothUUID(rawValue: "D35B1001-E01C-9FAC-BA8D-7CE20BDBA0C6")! {
-            end = 26
-        }
+        let end = endHandle(for: characteristic, service: service)
        // if end >= start {
             let operation = DescriptorDiscoveryOperation(start: start, end: end, completion: completion)
-            //print("discoverDescriptors -> for Characteristic", characteristic)
+        
             discoverDescriptors(operation: operation)
       //  }
     }
@@ -293,7 +287,7 @@ public final class GATTClient {
     public func writeDescriptor(_ descriptor: Descriptor,
                                 data: Data,
                                 reliableWrites: Bool = true,
-                                completion: ((GATTClientResponse<()>) -> ())?) {
+                                completion: @escaping (GATTClientResponse<()>) -> ()) {
         
         writeAttribute(descriptor.handle,
                        data: data,
@@ -316,6 +310,46 @@ public final class GATTClient {
         
         guard let descriptor = descriptors.first(where: { $0.uuid == .clientCharacteristicConfiguration })
             else { completion(.error(GATTClientError.clientCharacteristicConfigurationNotAllowed(characteristic))); return }
+        
+        var clientConfiguration = GATTClientCharacteristicConfiguration()
+        
+        if notification != nil {
+            clientConfiguration.configuration.insert(.notify)
+        }
+        
+        if indication != nil {
+            clientConfiguration.configuration.insert(.indicate)
+        }
+        
+        writeDescriptor(descriptor, data: clientConfiguration.data) { [unowned self] (response) in
+            
+            switch response {
+                
+            case .error:
+                break
+                
+            case .value:
+                
+                self.notifications[characteristic.handle.value] = notification
+                self.indications[characteristic.handle.value] = indication
+            }
+            
+            completion(response)
+        }
+    }
+	
+    /**
+     Notifications
+     
+     This sub-procedure is used when a server is configured to notify a Characteristic Value to a client without expecting any Attribute Protocol layer acknowledgment that the notification was successfully received.
+     
+     ![Image](https://github.com/PureSwift/Bluetooth/raw/master/Assets/Notifications.png)
+     */
+    public func clientCharacteristicConfiguration(notification: Notification?,
+                                                  indication: Notification?,
+                                                  for characteristic: Characteristic,
+                                                  descriptor: GATTClient.Descriptor,
+                                                  completion: @escaping (GATTClientResponse<()>) -> ()) {
         
         var clientConfiguration = GATTClientCharacteristicConfiguration()
         
@@ -458,8 +492,7 @@ public final class GATTClient {
                                          completion: @escaping (GATTClientResponse<[Characteristic]>) -> ()) {
         
         let attributeType = GATTUUID.characteristic
-        //print("Discover Characteristic with UUID of", uuid)
-        //print("Service.handle start =", service.handle, "service handle end =", service.end)
+        
         let operation = DiscoveryOperation<Characteristic>(uuid: uuid,
                                                            start: service.handle,
                                                            end: service.end,
@@ -475,10 +508,10 @@ public final class GATTClient {
     
     private func discoverDescriptors(operation: DescriptorDiscoveryOperation) {
        // guard operation.foundDescriptors.count > 0 else { return }
-        assert(operation.start <= operation.end, "Invalid range \(operation)")
-        //print("Operation Start = \(operation.start) and operation end = \(operation.end)")
+       // assert(operation.start <= operation.end, "Invalid range \(operation)")
+        print("Operation Start = \(operation.start) and operation end = \(operation.end)")
         let pdu = ATTFindInformationRequest(startHandle: operation.start, endHandle: operation.end)
-        //print("PDU = \(pdu)")
+        print("PDU = \(pdu)")
         send(pdu) { [unowned self] in self.findInformationResponse($0, operation: operation) }
     }
     
@@ -809,9 +842,6 @@ public final class GATTClient {
         case let .value(pdu):
             
             // pre-allocate array
-            //print("findInformationResponse -> Pre-allocate array -> operation.foundDescriptors.reserveCapacity(operation.foundDescriptors.count + pdu.data.count)")
-            //print("findInformationResponse -> operation.foundDescriptors.count =", operation.foundDescriptors.count)
-            //print("findInformationResponse -> pdu.data.count =", pdu.data.count)
             operation.foundDescriptors.reserveCapacity(operation.foundDescriptors.count + pdu.data.count)
             
             let foundData: [Descriptor]
@@ -819,16 +849,16 @@ public final class GATTClient {
             switch pdu.attributeData {
                 
             case let .bit16(values):
-               // //print("foundData = values.map { Descriptor(uuid: .bit16($0.uuid), handle: $0.handle) }")
+                
                 foundData = values.map { Descriptor(uuid: .bit16($0.uuid), handle: $0.handle) }
                 
             case let .bit128(values):
-               // //print("foundData = values.map { Descriptor(uuid: .bit128($0.uuid), handle: $0.handle) }")
+                
                 foundData = values.map { Descriptor(uuid: .bit128($0.uuid), handle: $0.handle) }
             }
-            //print("findInformationResponse -> operation.foundDescriptors count =", operation.foundDescriptors.count)
+            
             operation.foundDescriptors += foundData
-            //print("findInformationResponse -> operation.foundDescriptors count =", operation.foundDescriptors.count)
+            
             // get more if possible
             let lastHandle = foundData.last?.handle ?? 0x00
             
@@ -878,9 +908,6 @@ public final class GATTClient {
         case let .value(pdu):
             
             // pre-allocate array
-            //print("readByTypeResponse -> Pre-allocate array -> operation.foundData.reserveCapacity(operation.foundData.count + pdu.data.count)")
-            //print("readByTypeResponse -> operation.foundDescriptors.count =", operation.foundData.count)
-            //print("readByTypeResponse -> pdu.data.count =", pdu.data.count)
             operation.foundData.reserveCapacity(operation.foundData.count + pdu.data.count)
             
             // parse pdu data
@@ -912,7 +939,6 @@ public final class GATTClient {
             }
             
             // get more if possible
-            
             let lastEnd = pdu.attributeData.last?.handle ?? 0x00
             
             // prevent infinite loop
@@ -1274,6 +1300,12 @@ public extension GATTClient {
         public let uuid: BluetoothUUID
         
         public let handle: UInt16
+
+	public init(uuid: BluetoothUUID, handle: UInt16) {
+	    self.uuid = uuid
+	    self.handle = handle
+	}
+
     }
 }
 
@@ -1311,7 +1343,7 @@ fileprivate final class DiscoveryOperation <T> {
     
     @inline(__always)
     func success() {
-        //print("DiscoveryOperation value =", foundData)
+        
         completion(.value(foundData))
     }
     
