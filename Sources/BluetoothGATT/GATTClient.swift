@@ -808,6 +808,9 @@ public final class GATTClient {
         case let .value(pdu):
             
             // pre-allocate array
+            print("Pre-allocate array -> operation.foundDescriptors.reserveCapacity(operation.foundDescriptors.count + pdu.data.count)")
+            print("operation.foundDescriptors.count =", operation.foundDescriptors.count)
+            print("pdu.data.count =", pdu.data.count)
             operation.foundDescriptors.reserveCapacity(operation.foundDescriptors.count + pdu.data.count)
             
             let foundData: [Descriptor]
