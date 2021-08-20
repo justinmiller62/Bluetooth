@@ -815,11 +815,11 @@ public final class GATTClient {
             switch pdu.attributeData {
                 
             case let .bit16(values):
-                
+                print("foundData = values.map { Descriptor(uuid: .bit16($0.uuid), handle: $0.handle) }")
                 foundData = values.map { Descriptor(uuid: .bit16($0.uuid), handle: $0.handle) }
                 
             case let .bit128(values):
-                
+                print("foundData = values.map { Descriptor(uuid: .bit128($0.uuid), handle: $0.handle) }")
                 foundData = values.map { Descriptor(uuid: .bit128($0.uuid), handle: $0.handle) }
             }
             print("operation.foundDescriptors count =", operation.foundDescriptors.count)
