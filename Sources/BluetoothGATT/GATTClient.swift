@@ -1298,6 +1298,12 @@ public extension GATTClient {
         public let properties: BitMaskOptionSet<Property>
         
         public let handle: (declaration: UInt16, value: UInt16)
+        
+        public init(uuid: BluetoothUUID, properties: BitMaskOptionSet<Property>, handle: (declaration: UInt16, value: UInt16)) {
+            self.uuid = uuid
+            self.properties = properties
+            self.handle = handle
+        }
     }
     
     /// A discovered descriptor
