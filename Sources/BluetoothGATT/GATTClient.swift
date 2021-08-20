@@ -458,7 +458,8 @@ public final class GATTClient {
                                          completion: @escaping (GATTClientResponse<[Characteristic]>) -> ()) {
         
         let attributeType = GATTUUID.characteristic
-        
+        print("Discover Characteristic with UUID of", uuid)
+        print("Service.handle start =", service.handle, "service handle end =", service.end)
         let operation = DiscoveryOperation<Characteristic>(uuid: uuid,
                                                            start: service.handle,
                                                            end: service.end,
@@ -808,9 +809,9 @@ public final class GATTClient {
         case let .value(pdu):
             
             // pre-allocate array
-            print("Pre-allocate array -> operation.foundDescriptors.reserveCapacity(operation.foundDescriptors.count + pdu.data.count)")
-            print("operation.foundDescriptors.count =", operation.foundDescriptors.count)
-            print("pdu.data.count =", pdu.data.count)
+            print("findInformationResponse -> Pre-allocate array -> operation.foundDescriptors.reserveCapacity(operation.foundDescriptors.count + pdu.data.count)")
+            print("findInformationResponse -> operation.foundDescriptors.count =", operation.foundDescriptors.count)
+            print("findInformationResponse -> pdu.data.count =", pdu.data.count)
             operation.foundDescriptors.reserveCapacity(operation.foundDescriptors.count + pdu.data.count)
             
             let foundData: [Descriptor]
@@ -818,16 +819,16 @@ public final class GATTClient {
             switch pdu.attributeData {
                 
             case let .bit16(values):
-                print("foundData = values.map { Descriptor(uuid: .bit16($0.uuid), handle: $0.handle) }")
+               // print("foundData = values.map { Descriptor(uuid: .bit16($0.uuid), handle: $0.handle) }")
                 foundData = values.map { Descriptor(uuid: .bit16($0.uuid), handle: $0.handle) }
                 
             case let .bit128(values):
-                print("foundData = values.map { Descriptor(uuid: .bit128($0.uuid), handle: $0.handle) }")
+               // print("foundData = values.map { Descriptor(uuid: .bit128($0.uuid), handle: $0.handle) }")
                 foundData = values.map { Descriptor(uuid: .bit128($0.uuid), handle: $0.handle) }
             }
-            print("operation.foundDescriptors count =", operation.foundDescriptors.count)
+            print("findInformationResponse -> operation.foundDescriptors count =", operation.foundDescriptors.count)
             operation.foundDescriptors += foundData
-            print("operation.foundDescriptors count =", operation.foundDescriptors.count)
+            print("findInformationResponse -> operation.foundDescriptors count =", operation.foundDescriptors.count)
             // get more if possible
             let lastHandle = foundData.last?.handle ?? 0x00
             
@@ -877,6 +878,9 @@ public final class GATTClient {
         case let .value(pdu):
             
             // pre-allocate array
+            print("readByTypeResponse -> Pre-allocate array -> operation.foundData.reserveCapacity(operation.foundData.count + pdu.data.count)")
+            print("readByTypeResponse -> operation.foundDescriptors.count =", operation.foundData.count)
+            print("readByTypeResponse -> pdu.data.count =", pdu.data.count)
             operation.foundData.reserveCapacity(operation.foundData.count + pdu.data.count)
             
             // parse pdu data
@@ -908,6 +912,7 @@ public final class GATTClient {
             }
             
             // get more if possible
+            
             let lastEnd = pdu.attributeData.last?.handle ?? 0x00
             
             // prevent infinite loop
@@ -1306,7 +1311,7 @@ fileprivate final class DiscoveryOperation <T> {
     
     @inline(__always)
     func success() {
-        
+        print("DiscoveryOperation value =", foundData)
         completion(.value(foundData))
     }
     
