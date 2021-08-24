@@ -253,6 +253,7 @@ internal final class ATTConnection {
             
         case .request:
             print("Request Queue =", requestQueue, "and opcode", sendOpcode)
+            print("Request Queue Capacity =", requestQueue.capacity)
             requestQueue.append(sendOpcode)
             
         case .indication:
