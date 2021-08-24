@@ -252,7 +252,7 @@ internal final class ATTConnection {
         switch type {
             
         case .request:
-            print("Request Queue =", requestQueue)
+            print("Request Queue =", requestQueue, "and opcode", sendOpcode)
             requestQueue.append(sendOpcode)
             
         case .indication:
