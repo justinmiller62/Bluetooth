@@ -568,7 +568,6 @@ public final class GATTClient {
                                 data: Data,
                                 reliableWrites: Bool,
                                 completion: ((GATTClientResponse<()>) -> ())?) {
-        print("Write attribute with data size of", data.count)
         // short value
         if data.count <= Int(maximumTransmissionUnit.rawValue) - 3 { // ATT_MTU - 3
             
