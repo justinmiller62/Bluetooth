@@ -261,14 +261,14 @@ internal final class ATTConnection {
             requestQueue.append(sendOpcode)
             
         case .indication:
-            print("Indication Queue =", indicationQueue)
+            //print("Indication Queue =", indicationQueue)
             indicationQueue.append(sendOpcode)
             
         case .response,
              .command,
              .confirmation,
              .notification:
-            print("Write Queue =", writeQueue)
+            //print("Write Queue =", writeQueue)
             writeQueue.append(sendOpcode)
         }
         
