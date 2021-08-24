@@ -455,10 +455,10 @@ internal final class ATTConnection {
         }
         
         // If there is no pending request, pick an operation from the request queue.
-        print("requestQueue.popFirst()")
+        
         if pendingRequest == nil,
             let sendOpcode = requestQueue.popFirst() {
-            
+            print("requestQueue.popFirst(), with count", requestQueue.count)
             return sendOpcode
         }
         
