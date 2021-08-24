@@ -399,10 +399,10 @@ public final class GATTClient {
         
         let log = self.log
         
-        log?("Request: \(request)")
+        print("Request: \(request)")
         
         let callback: (AnyATTResponse) -> () = {
-            log?("Response: \($0.rawValue)")
+            print("Response: \($0.rawValue)")
             response(ATTResponse<Response>($0))
         }
         
