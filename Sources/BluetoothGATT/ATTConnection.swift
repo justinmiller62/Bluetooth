@@ -252,18 +252,18 @@ internal final class ATTConnection {
         switch type {
             
         case .request:
-            
+            print("Request Queue =", requestQueue)
             requestQueue.append(sendOpcode)
             
         case .indication:
-            
+            print("Indication Queue =", indicationQueue)
             indicationQueue.append(sendOpcode)
             
         case .response,
              .command,
              .confirmation,
              .notification:
-            
+            print("Write Queue =", writeQueue)
             writeQueue.append(sendOpcode)
         }
         
