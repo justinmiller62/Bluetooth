@@ -440,6 +440,7 @@ internal final class ATTConnection {
         self.pendingRequest = nil
         
         // Push operation back to request queue
+        print("requestQueue.insert(pendingRequest, at: 0)", pendingRequest)
         requestQueue.insert(pendingRequest, at: 0)
         
         return (opcode, true)
@@ -454,6 +455,7 @@ internal final class ATTConnection {
         }
         
         // If there is no pending request, pick an operation from the request queue.
+        print("requestQueue.popFirst()")
         if pendingRequest == nil,
             let sendOpcode = requestQueue.popFirst() {
             
