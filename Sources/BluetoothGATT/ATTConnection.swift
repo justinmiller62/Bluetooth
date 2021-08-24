@@ -252,8 +252,12 @@ internal final class ATTConnection {
         switch type {
             
         case .request:
-            print("Request Queue =", requestQueue, "and opcode", sendOpcode)
+           // print("Request Queue =", requestQueue, "and opcode", sendOpcode)
             print("Request Queue Capacity =", requestQueue.capacity)
+            if requestQueue.capacity == 0 {
+                requestQueue.reserveCapacity(1)
+                print("Request Queue Capacity =", requestQueue.capacity)
+            }
             requestQueue.append(sendOpcode)
             
         case .indication:
@@ -440,7 +444,7 @@ internal final class ATTConnection {
         self.pendingRequest = nil
         
         // Push operation back to request queue
-        print("requestQueue.insert(pendingRequest, at: 0)", pendingRequest)
+       // print("requestQueue.insert(pendingRequest, at: 0)", pendingRequest)
         requestQueue.insert(pendingRequest, at: 0)
         
         return (opcode, true)
@@ -458,7 +462,7 @@ internal final class ATTConnection {
         
         if pendingRequest == nil,
             let sendOpcode = requestQueue.popFirst() {
-            print("requestQueue.popFirst(), with count", requestQueue.count)
+            //print("requestQueue.popFirst(), with count", requestQueue.count)
             return sendOpcode
         }
         
